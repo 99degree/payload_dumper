@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import struct
 import hashlib
 import bz2
@@ -122,6 +122,8 @@ parser.add_argument('--diff',action='store_true',
                     help='extract differential OTA, you need put original images to old dir')
 parser.add_argument('--old', default='old',
                     help='directory with original images for differential OTA (defaul: old)')
+parser.add_argument('--part', default="all",
+                    help='dump partitions by name(defaul: all)')
 args = parser.parse_args()
 
 #Check for --out directory exists
@@ -157,5 +159,10 @@ for part in dam.partitions:
 
     # extents = flatten([op.dst_extents for op in part.operations])
     # assert verify_contiguous(extents), 'operations do not span full image'
-
-    dump_part(part)
+    if args.part == "all":
+        dump_part(part)
+    elif args.part == part.partition_name:
+        dump_part(part)
+    else:
+        sys.stdout.write("Skip processing %s partition \n" % part.partition_name)
+        sys.stdout.flush()
